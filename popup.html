@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Popup</title>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="jquery.tmpl.min.js"></script>
+		<script type="text/javascript" src="weibo.js"></script>
+		<link href="style.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<body>
+		<ul id="items"></ul>
+		<script id="itemTemplate" type="text/x-jquery-tmpl">
+			<li class="item" mid="${mid}">
+				<div class="user">
+					<img src="${user.profile_image_url}">
+				</div>			
+				<div class="content">
+					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>{{html getText(text)}}
+					{{if retweeted_status}}
+					<div class="retweet">
+						<p>
+							<a href="http://weibo.cn/n/${retweeted_status.user.name}" >@${retweeted_status.user.name}</a>
+						</p>
+						<div class="content">
+							{{html getText(retweeted_status.text)}}
+						</div>
+						{{if retweeted_status.thumbnail_pic }}
+						<img src="${retweeted_status.thumbnail_pic}">
+						{{/if}}
+					</div>
+					{{/if}}
+				</div>
+			</li>
+		</script>
+	</body>
+</html>

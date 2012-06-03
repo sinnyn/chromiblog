@@ -1,0 +1,52 @@
+body div ul ol li p{
+	margin:0;
+	padding:0;
+}
+
+a {
+	text-decoration: none;
+}
+
+body {
+	font: 12px/1.125 Arial,Helvetica,sans-serif;
+}
+
+.items {
+	list-style-type: none;
+}
+
+.item {
+	width: 100%;
+	word-wrap: break-word;
+	padding: 5px;
+}
+
+.item:after {
+	clear: both;
+	content: "";
+	display: block;
+}
+
+.item span{
+	padding-right: 5px;
+}
+
+.user {
+	float: left;
+}
+
+.content {
+	padding-left: 15px;
+	position: relative;
+	overflow: hidden;
+}
+
+.retweet {
+	background-color: #F7F7F7;
+	margin: 10px;
+	padding: 8px;
+}
+
+.retweet img {
+	padding: 5px 20px 10px 20px;
+}
