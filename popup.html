@@ -5,27 +5,34 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Popup</title>
 		<link rel="stylesheet" type="text/css" href="style.css"/>
-		<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
-		<script type="text/javascript" src="jquery.tmpl.min.js"></script>
-		<script type="text/javascript" src="weibo.js"></script>
+		<script type="text/javascript" src="jquery-1.7.2.min.js"> </script>
+		<script type="text/javascript" src="jquery.tmpl.min.js"> </script>
+		<script type="text/javascript" src="weibo.js"> </script>
 		<link href="style.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<body>
-		<ul id="items"></ul>
+		<ul id="items"> </ul>
 		<script id="itemTemplate" type="text/x-jquery-tmpl">
 			<li class="item" mid="${mid}">
 				<div class="user">
 					<img src="${user.profile_image_url}">
 				</div>			
 				<div class="content">
-					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>{{html getText(text)}}
+					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
+					<div class="text">
+					{{html WB.getText(text)}}
+					</div>
+					{{if thumbnail_pic }}
+						<img src="${thumbnail_pic}">
+						{{/if}}
+					</div>
 					{{if retweeted_status}}
 					<div class="retweet">
 						<p>
 							<a href="http://weibo.cn/n/${retweeted_status.user.name}" >@${retweeted_status.user.name}</a>
 						</p>
-						<div class="content">
-							{{html getText(retweeted_status.text)}}
+						<div class="text">
+							{{html WB.getText(retweeted_status.text)}}
 						</div>
 						{{if retweeted_status.thumbnail_pic }}
 						<img src="${retweeted_status.thumbnail_pic}">
@@ -33,7 +40,16 @@
 					</div>
 					{{/if}}
 				</div>
+				<div class="interaction">
+					<span class="forward">转发</span>
+					<span class="comment">评论</span>
+				</div>
 			</li>
+		</script>
+		<script id="forwardTemplate" type="text/x-jquery-tmpl">
+			<div class="forwardPanel">
+				<textarea id="forwardPanel"></textarea>
+			</div>
 		</script>
 	</body>
 </html>

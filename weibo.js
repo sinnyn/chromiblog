@@ -64,48 +64,64 @@
 	
 })();
 
-function readTimeline(){
-	var TIMELINEURL="https://api.weibo.com/2/statuses/home_timeline.json";
-	var accessToken = localStorage["wb_accessToken"];
-	var sinceId = localStorage['wb_sinceId'];
-	var paramObj = {access_token: accessToken, count: 5};
-	if (sinceId != 0) {
-		paramObj.since_id = sinceId;
+(function(){
+	var weibo = {};
+	if (window.WB == undefined) {
+		window.WB = weibo;
+	} else {
+		return;
 	}
-	$.ajax({
-		url:TIMELINEURL,
-		data:paramObj,
-		dataType: "json",
-		success: function(data){
-			if (data.statuses.length>0) {
-				localStorage['wb_sinceId'] = data.statuses[0].mid;
-			}
-			$('#itemTemplate').tmpl(data.statuses).prependTo('#items');
-		},
-		error: function(data){
-			var errorMsg = JSON.parse(data.responseText);
-			if (errorMsg.error_code == 21327) {
-				//Regain access token
-				localStorage.removeItem('wb_uid');
-				localStorage.removeItem('wb_accessToken');
-				WBOAUTH2.authorize();
-			}
+	weibo.readTimeline = function(first) {
+		var TIMELINEURL="https://api.weibo.com/2/statuses/home_timeline.json";
+		var accessToken = localStorage["wb_accessToken"];
+		var sinceId = localStorage['wb_sinceId'];
+		var paramObj = {access_token: accessToken, count: 5};
+		if (sinceId != 0 && !first) {
+			paramObj.since_id = sinceId;
 		}
-		});
-}
+		$.ajax({
+			url:TIMELINEURL,
+			data:paramObj,
+			dataType: "json",
+			success: function(data){
+				if (data.statuses.length>0) {
+					localStorage['wb_sinceId'] = data.statuses[0].mid;
+				}
+				$('#itemTemplate').tmpl(data.statuses).prependTo('#items').each(function(i){
+					$(this).children('.interaction').children('.forward').click(function(){
+						debugger;
+					});
+					$(this).children('.interaction').children('.comment').click(function(){
+						debugger;
+					});
+				});
+			},
+			error: function(data){
+				var errorMsg = JSON.parse(data.responseText);
+				if (errorMsg.error_code == 21327) {
+					//Regain access token
+					localStorage.removeItem('wb_uid');
+					localStorage.removeItem('wb_accessToken');
+					WBOAUTH2.authorize();
+				}
+			}
+			});
+	};
+	
+	weibo.getText = function(text) {
+		text = text.replace(/(http:[^\s；：“”‘’\\:;]*)/g, '<a href="$1">$1</a>');
+		text = text.replace(/@([^\s；：“”‘’\\:;]+)/g, '<a href="http://weibo.cn/n/$1">@$1</a>');
+		text = text.replace(/#([^\s；：“”‘’\\:;]+)#/g, '<a href="http://s.weibo.cn/weibo/$1">#$1#</a>')
+		return text;
+	};
 
-function getText(text) {
-	text = text.replace(/(http:[^\s；：“”‘’\\:;]*)/g, '<a href="$1">$1</a>');
-	text = text.replace(/@([^\s；：“”‘’\\:;]+)/g, '<a href="http://weibo.cn/n/$1">@$1</a>');
-	text = text.replace(/#([^\s；：“”‘’\\:;]+)#/g, '<a href="http://s.weibo.cn/weibo/$1">#$1#</a>')
-	return text;
-}
+})();
 
-$(document).ready(function(){
+$(document).ready(function() {
 	if (localStorage['wb_uid'])	{
 		//window.setTimeout(readTimeline, 1000);
-		readTimeLine();
-		setInterval(readTimeline, 30000);
+		WB.readTimeline(true);
+		//setInterval(WB.readTimeline, 30000);
 	} else {
 		if (WBOAUTH2.getURLParameter('access_token')) {
 			WBOAUTH2.getAccessToken();
