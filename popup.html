@@ -41,8 +41,10 @@
 					{{/if}}
 				</div>
 				<div class="interaction">
-					<span class="forward">转发</span>
-					<span class="comment">评论</span>
+					<span class="client">来自 {{html source}}</span>
+					<span class="time">发于 ${WB.getDateText(created_at)}</span>
+					<span class="forward">转发(${reposts_count})</span>
+					<span class="comment">评论(${comments_count})</span>
 				</div>
 			</li>
 		</script>

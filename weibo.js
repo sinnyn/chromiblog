@@ -65,47 +65,70 @@
 })();
 
 (function(){
-	var weibo = {};
+	var weibo = {
+		TIMELINE_URL : 'https://api.weibo.com/2/statuses/home_timeline.json',
+		REPOST_TIMELINE_URL : 'https://api.weibo.com/2/statuses/repost_timeline.json',
+		COMMENTS_SHOW_URL : 'https://api.weibo.com/2/comments/show.json'
+	};
 	if (window.WB == undefined) {
 		window.WB = weibo;
 	} else {
 		return;
 	}
+	$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
+		var errorMsg = JSON.parse(jqXHR.responseText);
+		switch (errorMsg.error_code) {
+			case 21327:
+			case 21332:
+				//Regain access token
+				localStorage.removeItem('wb_uid');
+				localStorage.removeItem('wb_accessToken');
+				WBOAUTH2.authorize();
+				break;
+			default:
+				break;
+				
+		}
+	});
 	weibo.readTimeline = function(first) {
-		var TIMELINEURL="https://api.weibo.com/2/statuses/home_timeline.json";
 		var accessToken = localStorage["wb_accessToken"];
 		var sinceId = localStorage['wb_sinceId'];
 		var paramObj = {access_token: accessToken, count: 5};
 		if (sinceId != 0 && !first) {
 			paramObj.since_id = sinceId;
 		}
-		$.ajax({
-			url:TIMELINEURL,
-			data:paramObj,
-			dataType: "json",
-			success: function(data){
+		$.get(weibo.TIMELINE_URL, paramObj,function(data){
 				if (data.statuses.length>0) {
 					localStorage['wb_sinceId'] = data.statuses[0].mid;
 				}
 				$('#itemTemplate').tmpl(data.statuses).prependTo('#items').each(function(i){
+					var parentObj = this;
 					$(this).children('.interaction').children('.forward').click(function(){
-						debugger;
+						$.get(weibo.REPOST_TIMELINE_URL, {
+							access_token: accessToken,
+							id: $(parentObj).attr('mid')},
+							function(data){
+								weibo.handleReposts(data, this);
+							});
 					});
 					$(this).children('.interaction').children('.comment').click(function(){
-						debugger;
+						$.get(weibo.COMMENTS_SHOW_URL, {
+							access_token: accessToken,
+							id: $(parentObj).attr('mid')},
+							function(data){
+								weibo.handleComments(data, this);
+							});
 					});
 				});
-			},
-			error: function(data){
-				var errorMsg = JSON.parse(data.responseText);
-				if (errorMsg.error_code == 21327) {
-					//Regain access token
-					localStorage.removeItem('wb_uid');
-					localStorage.removeItem('wb_accessToken');
-					WBOAUTH2.authorize();
-				}
-			}
 			});
+	};
+	
+	weibo.handleReposts = function(data, jqObj) {
+		
+	};
+	
+	weibo.handleComments = function(data, jqObj) {
+		
 	};
 	
 	weibo.getText = function(text) {
@@ -113,6 +136,11 @@
 		text = text.replace(/@([^\s；：“”‘’\\:;]+)/g, '<a href="http://weibo.cn/n/$1">@$1</a>');
 		text = text.replace(/#([^\s；：“”‘’\\:;]+)#/g, '<a href="http://s.weibo.cn/weibo/$1">#$1#</a>')
 		return text;
+	};
+	
+	weibo.getDateText = function(text) {
+		var date = new Date(text);
+		return date.getFullYear() + "年" + date.getMonth() + "月" + date.getDate() + "日" + date.toLocaleTimeString();
 	};
 
 })();
@@ -125,6 +153,7 @@ $(document).ready(function() {
 	} else {
 		if (WBOAUTH2.getURLParameter('access_token')) {
 			WBOAUTH2.getAccessToken();
+			WB.readTimeline(true);
 		} else {
 			WBOAUTH2.authorize();
 		}
