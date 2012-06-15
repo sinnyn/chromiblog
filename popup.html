@@ -16,22 +16,21 @@
 			<li class="item" mid="${mid}">
 				<div class="user">
 					<img src="${user.profile_image_url}">
-				</div>			
+				</div>
 				<div class="content">
-					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
 					<div class="text">
+						<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
 					{{html WB.getText(text)}}
 					</div>
 					{{if thumbnail_pic }}
 						<img src="${thumbnail_pic}">
-						{{/if}}
-					</div>
+					{{/if}}
 					{{if retweeted_status}}
 					<div class="retweet">
-						<p>
-							<a href="http://weibo.cn/n/${retweeted_status.user.name}" >@${retweeted_status.user.name}</a>
-						</p>
 						<div class="text">
+							<span>
+								<a href="http://weibo.cn/n/${retweeted_status.user.name}" >@${retweeted_status.user.name}</a>
+							</span>
 							{{html WB.getText(retweeted_status.text)}}
 						</div>
 						{{if retweeted_status.thumbnail_pic }}
@@ -39,19 +38,42 @@
 						{{/if}}
 					</div>
 					{{/if}}
-				</div>
-				<div class="interaction">
-					<span class="client">来自 {{html source}}</span>
-					<span class="time">发于 ${WB.getDateText(created_at)}</span>
-					<span class="forward">转发(${reposts_count})</span>
-					<span class="comment">评论(${comments_count})</span>
+					<div class="interaction">
+						<span class="client">来自 {{html source}}</span>
+						<span class="time">发于 ${WB.getDateText(created_at)}</span>
+						<span class="forward">转发(${reposts_count})</span>
+						<span class="comment">评论(${comments_count})</span>
+					</div>
+					<div class="forwardPanel">
+						<textarea id="forwardPanel"></textarea>
+						<ul class="reposts">
+						</ul>
+					</div>
+					<div class="commentPanel">
+						<textarea id="commentPanel"></textarea>
+						<ul class="comments">
+						</ul>
+					</div>
 				</div>
 			</li>
 		</script>
 		<script id="forwardTemplate" type="text/x-jquery-tmpl">
-			<div class="forwardPanel">
-				<textarea id="forwardPanel"></textarea>
-			</div>
+			<li class="repost">
+				<div>
+					<img src="${user.profile_image_url}" width="30px" height="30px">
+					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
+					<span>{{html WB.getText(text)}}</span>
+				</div>
+			</li>
+		</script>
+		<script id="commentTemplate" type="text/x-jquery-tmpl">
+			<li class="comment">
+				<div>
+					<img src="${user.profile_image_url}" width="30px" height="30px">
+					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
+					<span>{{html WB.getText(text)}}</span>
+				</div>
+			</li>
 		</script>
 	</body>
 </html>

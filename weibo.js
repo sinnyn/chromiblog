@@ -93,7 +93,7 @@
 	weibo.readTimeline = function(first) {
 		var accessToken = localStorage["wb_accessToken"];
 		var sinceId = localStorage['wb_sinceId'];
-		var paramObj = {access_token: accessToken, count: 5};
+		var paramObj = {access_token: accessToken, count: 10};
 		if (sinceId != 0 && !first) {
 			paramObj.since_id = sinceId;
 		}
@@ -103,32 +103,32 @@
 				}
 				$('#itemTemplate').tmpl(data.statuses).prependTo('#items').each(function(i){
 					var parentObj = this;
-					$(this).children('.interaction').children('.forward').click(function(){
+					$(this).find('.forward').click(function(){
 						$.get(weibo.REPOST_TIMELINE_URL, {
 							access_token: accessToken,
 							id: $(parentObj).attr('mid')},
 							function(data){
-								weibo.handleReposts(data, this);
+								weibo.handleReposts(data, parentObj);
 							});
 					});
-					$(this).children('.interaction').children('.comment').click(function(){
+					$(this).find('.comment').click(function(){
 						$.get(weibo.COMMENTS_SHOW_URL, {
 							access_token: accessToken,
 							id: $(parentObj).attr('mid')},
 							function(data){
-								weibo.handleComments(data, this);
+								weibo.handleComments(data, parentObj);
 							});
 					});
 				});
 			});
 	};
 	
-	weibo.handleReposts = function(data, jqObj) {
-		
+	weibo.handleReposts = function(data, ele) {
+		$('#forwardTemplate').tmpl(data.reposts).appendTo($(ele).find('.reposts'));
 	};
 	
-	weibo.handleComments = function(data, jqObj) {
-		
+	weibo.handleComments = function(data, ele) {
+		$('#commentTemplate').tmpl(data.comments).appendTo($(ele).find('.comments'));
 	};
 	
 	weibo.getText = function(text) {

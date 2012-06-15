@@ -54,3 +54,11 @@ body {
 .retweet img {
 	padding: 5px 20px 10px 20px;
 }
+
+.reposts {
+	list-style-type: none;
+}
+
+.comments {
+	list-style-type: none;
+}
