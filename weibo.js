@@ -5,7 +5,7 @@
 
 (function(){
 	var OAUTH2 = {};
-	
+
 	if (window.WBOAUTH2 == undefined) {
 		window.WBOAUTH2 = OAUTH2;
 	} else {
@@ -17,7 +17,7 @@
 	var appSecret = "8db1e4d3c4a2b9c9509a1174e3347911";
 	var weibo_auth_url = "https://api.weibo.com/oauth2/authorize";
 	var weibo_token_url = "https://api.weibo.com/oauth2/access_token";
-	
+
 	OAUTH2.authorize = function() {
 		var form = $('<form>').attr({
 			method: 'post',
@@ -32,15 +32,15 @@
 			type: 'hidden',
 			name: 'redirect_uri',
 			value: callbackPage
-		}).appendTo(form);		
+		}).appendTo(form);
 		$('<input>').attr({
 			type: 'hidden',
 			name: 'response_type',
 			value: 'token'
-		}).appendTo(form);		
+		}).appendTo(form);
 		form.submit();
 	};
-	
+
 	OAUTH2.getAccessToken = function() {
 		var access_token = WBOAUTH2.getURLParameter('access_token');
 		var user_id = WBOAUTH2.getURLParameter('uid');
@@ -50,7 +50,7 @@
 		localStorage['wb_sinceId'] = 0;
 		//TODO expires
 	};
-	
+
 	OAUTH2.getURLParameter = function(name) {
 		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
 		var regexS = "[\\#&]" + name + "=([^&#]*)";
@@ -61,7 +61,7 @@
 		else
 		  return decodeURIComponent(results[1].replace(/\+/g, " "));
     };
-	
+
 })();
 
 (function(){
@@ -87,7 +87,7 @@
 				break;
 			default:
 				break;
-				
+
 		}
 	});
 	weibo.readTimeline = function(first) {
@@ -122,22 +122,22 @@
 				});
 			});
 	};
-	
+
 	weibo.handleReposts = function(data, ele) {
 		$('#forwardTemplate').tmpl(data.reposts).appendTo($(ele).find('.reposts'));
 	};
-	
+
 	weibo.handleComments = function(data, ele) {
 		$('#commentTemplate').tmpl(data.comments).appendTo($(ele).find('.comments'));
 	};
-	
+
 	weibo.getText = function(text) {
 		text = text.replace(/(http:[^\s；：“”‘’\\:;]*)/g, '<a href="$1">$1</a>');
 		text = text.replace(/@([^\s；：“”‘’\\:;]+)/g, '<a href="http://weibo.cn/n/$1">@$1</a>');
 		text = text.replace(/#([^\s；：“”‘’\\:;]+)#/g, '<a href="http://s.weibo.cn/weibo/$1">#$1#</a>')
 		return text;
 	};
-	
+
 	weibo.getDateText = function(text) {
 		var date = new Date(text);
 		return date.getFullYear() + "年" + date.getMonth() + "月" + date.getDate() + "日" + date.toLocaleTimeString();
