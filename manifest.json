@@ -1,12 +1,13 @@
 {
   "name": "Chromiblog",
-  "version": "1.0",
-  "description": "The first extension that I made.",
+  "version": "0.1",
+  "description": "A new style of Weibo",
   "app": {
     "launch": {
       "local_path": "popup.html"
     }
   },
+  "manifest_version": 2,
   "permissions": [
     "https://api.weibo.com/"
   ]

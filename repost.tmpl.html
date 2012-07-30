@@ -1,0 +1,9 @@
+{{each reposts}}
+<div class="repost">
+	<div>
+		<img src="{{user.profile_image_url}}" width="30px" height="30px">
+		<span><a href="http://weibo.cn/n/{{user.name}}" >@{{user.name}}</a></span>
+		<span>{{formatText text}}</span>
+	</div>
+</div>
+{{/each}}

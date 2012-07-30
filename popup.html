@@ -6,78 +6,12 @@
 		<title>Popup</title>
 		<link rel="stylesheet" type="text/css" href="style.css"/>
 		<script type="text/javascript" src="jquery-1.7.2.min.js"> </script>
-		<script type="text/javascript" src="jquery.tmpl.min.js"> </script>
+		<script type="text/javascript" src="handlebars.runtime-1.0.0.beta.6.js"></script>
+		<script type="text/javascript" src="itemTmpl.js"></script>
 		<script type="text/javascript" src="weibo.js"> </script>
 		<link href="style.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<body>
 		<div id="items"> </div>
-		<script id="itemTemplate" type="text/x-jquery-tmpl">
-			<div class="item" mid="${mid}">
-				<div class="content">
-                    {{if retweeted_status}}
-					<div class="retweet">
-                        {{if retweeted_status.thumbnail_pic }}
-						<img src="${retweeted_status.thumbnail_pic}">
-						{{/if}}
-						<div class="text">
-							<span>
-								<a href="http://weibo.cn/n/${retweeted_status.user.name}" >@${retweeted_status.user.name}</a>
-							</span>
-							{{html WB.getText(retweeted_status.text)}}
-						</div>
-					</div>
-					{{/if}}
-                    <div class="usercontent">
-                        {{if thumbnail_pic }}
-                            <img src="${thumbnail_pic}">
-                        {{/if}}
-                        <p>
-                        <a href="#">
-                            <img class="user" src="${user.profile_image_url}">
-                        </a>
-                        <span class="text"><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a>
-                            {{html WB.getText(text)}}
-                        </span>
-                        </p>
-                    </div>
-                    <div class="interaction">
-                        <span class="client">来自 {{html source}}</span>
-                        <span class="time">发于 ${WB.getDateText(created_at)}</span>
-                        <span class="forward">转发(${reposts_count})</span>
-                        <span class="comment">评论(${comments_count})</span>
-                    </div>
-
-					<!--<div class="forwardPanel">
-						<textarea id="forwardPanel"></textarea>
-						<ul class="reposts">
-						</ul>
-					</div>
-					<div class="commentPanel">
-						<textarea id="commentPanel"></textarea>
-						<ul class="comments">
-						</ul>
-					</div>-->
-				</div>
-			</div>
-		</script>
-		<script id="forwardTemplate" type="text/x-jquery-tmpl">
-			<div class="repost">
-				<div>
-					<img src="${user.profile_image_url}" width="30px" height="30px">
-					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
-					<span>{{html WB.getText(text)}}</span>
-				</div>
-			</div>
-		</script>
-		<script id="commentTemplate" type="text/x-jquery-tmpl">
-			<div class="comment">
-				<div>
-					<img src="${user.profile_image_url}" width="30px" height="30px">
-					<span><a href="http://weibo.cn/n/${user.name}" >@${user.name}</a></span>
-					<span>{{html WB.getText(text)}}</span>
-				</div>
-			</div>
-		</script>
 	</body>
 </html>

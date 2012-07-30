@@ -1,5 +1,7 @@
 /**
  * @author Sinnyn
+ * @Known Issue
+ * 1. When no wid found, the arthurize method cannot submit a form
  */
 
 
@@ -101,7 +103,8 @@
 				if (data.statuses.length>0) {
 					localStorage['wb_sinceId'] = data.statuses[0].mid;
 				}
-				$('#itemTemplate').tmpl(data.statuses).prependTo('#items').each(function(i){
+				var html = $(itemTemplate(data));
+/*				$('#itemTemplate').tmpl(data.statuses).prependTo('#items').each(function(i){
 					var parentObj = this;
 					$(this).find('.forward').click(function(){
 						$.get(weibo.REPOST_TIMELINE_URL, {
@@ -119,30 +122,42 @@
 								weibo.handleComments(data, parentObj);
 							});
 					});
-				});
+				});*/
 			});
 	};
 
 	weibo.handleReposts = function(data, ele) {
-		$('#forwardTemplate').tmpl(data.reposts).appendTo($(ele).find('.reposts'));
+		//$('#forwardTemplate').tmpl(data.reposts).appendTo($(ele).find('.reposts'));
 	};
 
 	weibo.handleComments = function(data, ele) {
-		$('#commentTemplate').tmpl(data.comments).appendTo($(ele).find('.comments'));
+		//$('#commentTemplate').tmpl(data.comments).appendTo($(ele).find('.comments'));
 	};
 
-	weibo.getText = function(text) {
+	Handlebars.registerHelper('formatText', function(text) {
 		text = text.replace(/(http:[^\s；：“”‘’\\:;]*)/g, '<a href="$1">$1</a>');
 		text = text.replace(/@([^\s；：“”‘’\\:;]+)/g, '<a href="http://weibo.cn/n/$1">@$1</a>');
 		text = text.replace(/#([^\s；：“”‘’\\:;]+)#/g, '<a href="http://s.weibo.cn/weibo/$1">#$1#</a>')
-		return text;
-	};
+		return new Handlebars.SafeString(text);
+	});
 
-	weibo.getDateText = function(text) {
+	Handlebars.registerHelper('formatDateText', function(text) {
 		var date = new Date(text);
 		return date.getFullYear() + "年" + date.getMonth() + "月" + date.getDate() + "日" + date.toLocaleTimeString();
-	};
+	});
 
+	Handlebars.registerHelper('safeText', function(text) {
+		return new Handlebars.SafeString(text);
+	});
+
+	var LINE_COUNT = 5;
+	var BLOCK_WIDTH = 140;
+	weibo.resize = function() {
+		var k = 0;
+		for (var i = 0; i < weibo.itemList.length; i++) {
+			itemList[i].top(itemList[i - LINE_COUNT].top() + itemList[i - LINE_COUNT].height()).left(k * BLOCK_WIDTH);
+		}
+	};
 })();
 
 $(document).ready(function() {
