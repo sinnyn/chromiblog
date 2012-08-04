@@ -77,7 +77,7 @@
 	} else {
 		return;
 	}
-	$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError){
+	$(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
 		var errorMsg = JSON.parse(jqXHR.responseText);
 		switch (errorMsg.error_code) {
 			case 21327:
@@ -92,21 +92,34 @@
 
 		}
 	});
-	weibo.readTimeline = function(first) {
+	weibo.readTimeline = function(first, maxId) {
 		var accessToken = localStorage["wb_accessToken"];
 		var sinceId = localStorage['wb_sinceId'];
 		var paramObj = {access_token: accessToken, count: 10};
 		if (sinceId != 0 && !first) {
 			paramObj.since_id = sinceId;
 		}
-		$.get(weibo.TIMELINE_URL, paramObj,function(data){
+		$.get(weibo.TIMELINE_URL, paramObj,function(data) {
+				if (!data.statuses) {
+					return;
+				}
 				if (data.statuses.length>0) {
 					localStorage['wb_sinceId'] = data.statuses[0].mid;
 				}
-				var html = $(itemTemplate(data));
-/*				$('#itemTemplate').tmpl(data.statuses).prependTo('#items').each(function(i){
+				var html = $(itemTemplate(data)).each(function(i, domEle) {
+					if (domEle.nodeType == 'Text') {
+						return;
+					}
 					var parentObj = this;
-					$(this).find('.forward').click(function(){
+					$(domEle).find('img').load(function() {
+						weibo.resizeColumn(parseInt($(domEle).attr('column')));
+					});
+					$(domEle).find('.interaction').mouseenter(function() {
+						$(parentObj).find('.info').show();
+					}).mouseleave(function() {
+						$(parentObj).find('.info').hide();
+					});
+					$(domEle).find('.forward').click(function() {
 						$.get(weibo.REPOST_TIMELINE_URL, {
 							access_token: accessToken,
 							id: $(parentObj).attr('mid')},
@@ -114,16 +127,22 @@
 								weibo.handleReposts(data, parentObj);
 							});
 					});
-					$(this).find('.comment').click(function(){
+					$(domEle).find('.comment').click(function() {
 						$.get(weibo.COMMENTS_SHOW_URL, {
 							access_token: accessToken,
 							id: $(parentObj).attr('mid')},
 							function(data){
 								weibo.handleComments(data, parentObj);
 							});
-					});
-				});*/
-			});
+					});					
+				});
+				if (maxId != undefined) {
+					html.appendTo('#items');
+				} else {
+					html.prependTo('#items');
+				}
+				weibo.resize();
+		});
 	};
 
 	weibo.handleReposts = function(data, ele) {
@@ -151,20 +170,33 @@
 	});
 
 	var LINE_COUNT = 5;
-	var BLOCK_WIDTH = 140;
+	var BLOCK_WIDTH = 237;
 	weibo.resize = function() {
-		var k = 0;
-		for (var i = 0; i < weibo.itemList.length; i++) {
-			itemList[i].top(itemList[i - LINE_COUNT].top() + itemList[i - LINE_COUNT].height()).left(k * BLOCK_WIDTH);
+		var itemList = $('.item');
+		for (var i = 0; i < itemList.length; i++) {
+			var nextTop = i < LINE_COUNT ? 0 : 
+				$(itemList[i - LINE_COUNT]).offset().top + $(itemList[i - LINE_COUNT]).height() + 30;
+			var leftCount = i % LINE_COUNT;
+			$(itemList[i]).attr('column', leftCount);
+			$(itemList[i]).css({top: nextTop, left: leftCount * BLOCK_WIDTH});
+		}
+	};
+	weibo.resizeColumn = function(index) {
+		var itemList = $('.item');
+		for (var i = index; i < itemList.length; i += LINE_COUNT) {
+			var nextTop = i < LINE_COUNT ? 0 :
+				$(itemList[i - LINE_COUNT]).offset().top + $(itemList[i - LINE_COUNT]).height() + 30;
+			$(itemList[i]).css('top', nextTop);
 		}
 	};
 })();
 
 $(document).ready(function() {
+	localStorage['wb_sinceId'] = 0;
 	if (localStorage['wb_uid'])	{
 		//window.setTimeout(readTimeline, 1000);
 		WB.readTimeline(true);
-		//setInterval(WB.readTimeline, 30000);
+		setInterval(WB.readTimeline, 30000);
 	} else {
 		if (WBOAUTH2.getURLParameter('access_token')) {
 			WBOAUTH2.getAccessToken();
